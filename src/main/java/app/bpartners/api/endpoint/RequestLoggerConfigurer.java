@@ -18,7 +18,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @PojaGenerated
-@SuppressWarnings("all")
 @Configuration
 @AllArgsConstructor
 public class RequestLoggerConfigurer implements WebMvcConfigurer {

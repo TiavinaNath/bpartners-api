@@ -16,7 +16,6 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
 
 @PojaGenerated
-@SuppressWarnings("all")
 @Configuration
 public class BucketConf implements BucketAccess {
 
