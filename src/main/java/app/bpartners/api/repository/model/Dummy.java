@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @PojaGenerated
-@SuppressWarnings("all")
 @Entity
 @Getter
 @Setter
