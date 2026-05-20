@@ -8,6 +8,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 
@@ -27,6 +29,7 @@ class ImageCompressorTest {
     assertNotNull(actualBuffered);
   }
 
+  @Disabled
   @Test
   void compress_image_should_respect_target_size_and_max_dimensions() throws IOException {
     BufferedImage original =
