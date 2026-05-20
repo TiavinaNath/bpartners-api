@@ -8,9 +8,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 
+@Slf4j
 class ImageCompressorTest {
 
   ImageCompressor subject = new ImageCompressor();
@@ -37,9 +40,17 @@ class ImageCompressorTest {
 
     long actualSize = getImageSizeBytes(actual);
 
-    assertTrue(actualSize <= originalSize);
-  }
+    log.info("Original size (bytes): {}", originalSize);
+    log.info("Actual size (bytes):   {}", actualSize);
+    log.info("Difference:            {}", originalSize - actualSize);
+    log.info("Original dimensions:   {}x{}", original.getWidth(), original.getHeight());
+    log.info("Actual dimensions:     {}x{}", actual.getWidth(), actual.getHeight());
 
+    assertTrue(
+        actualSize <= originalSize,
+        "Expected compressed size (" + actualSize + ") to be <= original size (" + originalSize + ")"
+    );
+  }
   private long getImageSizeBytes(BufferedImage image) throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ImageIO.write(image, IMAGE_FORMAT, baos);
