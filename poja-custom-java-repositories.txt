@@ -1,4 +1,0 @@
-maven {
-    url 'https://repo.osgeo.org/repository/release/'
-}
-mavenLocal()
