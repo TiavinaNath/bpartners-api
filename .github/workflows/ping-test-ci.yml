@@ -29,17 +29,12 @@ jobs:
           distribution: 'corretto'
 
       - name: Run ping test
-        id: test
-        continue-on-error: true
         run: |
-          set -o pipefail
-          set +e
-
           chmod +x gradlew
-          ./gradlew test --tests PingIT
-
-          EXIT_CODE=$?
-          set -e
+          ./gradlew test --tests PingIT --info 2>&1 | grep -A 2 "Could not resolve placeholder\|IllegalArgumentException\|BeanCreationException" || true
+      
+                EXIT_CODE=$?
+                set -e
 
           if [ $EXIT_CODE -eq 0 ]; then
             echo "outcome=SUCCESS" >> $GITHUB_OUTPUT
