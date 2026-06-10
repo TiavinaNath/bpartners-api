@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class FileDownloaderIT extends MockedThirdParties {
   @Autowired FileDownloader fileDownloader;
 
+  @Disabled
+  // open street map temporary down, 502 bad gateway
   @Test
   @Disabled("Sometime works, sometime doesn't (often on demo days xD)")
   void file_downloader_get_ok() {
