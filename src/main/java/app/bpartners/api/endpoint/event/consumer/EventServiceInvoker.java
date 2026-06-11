@@ -14,7 +14,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @PojaGenerated
-@SuppressWarnings("all")
 @AllArgsConstructor
 @Component
 @Slf4j
