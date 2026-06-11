@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @PojaGenerated
-@SuppressWarnings("all")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
