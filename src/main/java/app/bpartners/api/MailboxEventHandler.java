@@ -15,6 +15,8 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent.SQSMessage;
 import com.zaxxer.hikari.HikariDataSource;
+import io.sentry.Sentry;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +26,6 @@ import software.amazon.awssdk.regions.Region;
 
 @Slf4j
 @PojaGenerated
-@SuppressWarnings("all")
 public class MailboxEventHandler implements RequestHandler<SQSEvent, String> {
 
   public static final String SPRING_SERVER_PORT_FOR_RANDOM_VALUE = "0";
@@ -36,29 +37,34 @@ public class MailboxEventHandler implements RequestHandler<SQSEvent, String> {
   public String handleRequest(SQSEvent event, Context context) {
     renameWorkerThread(currentThread());
     log.info("Received: event={}, awsReqId={}", event, context.getAwsRequestId());
-    List<SQSMessage> messages = event.getRecords();
-    consumableEventTyper
-        .apply(messages)
-        .forEach(ConsumableEvent::newRandomVisibilityTimeout); // note(init-visibility)
-    log.info("SQS messages: {}", messages);
+    try {
+      List<SQSMessage> messages = event.getRecords();
+      consumableEventTyper
+          .apply(messages)
+          .forEach(ConsumableEvent::newRandomVisibilityTimeout); // note(init-visibility)
+      log.info("SQS messages: {}", messages);
 
-    var applicationContext = applicationContext();
-    getRuntime()
-        .addShutdownHook(
-            // in case, say, the execution timed out
-            // TODO: no, we have no control over when AWS shuts the JVM down
-            //   Best is to regularly check whether we are nearing end of allowedTime,
-            //   in which case we close resources before timing out.
-            //   Frontal functions might have the same issue also.
-            new Thread(() -> onHandled(applicationContext)));
-
-    var eventConsumer = applicationContext.getBean(EventConsumer.class);
-    var messageConverter = applicationContext.getBean(ConsumableEventTyper.class);
-
-    eventConsumer.accept(messageConverter.apply(messages));
-
-    onHandled(applicationContext);
-    return "ok";
+      try (var applicationContext = applicationContext()) {
+        getRuntime()
+            .addShutdownHook(
+                // in case, say, the execution timed out
+                // TODO: no, we have no control over when AWS shuts the JVM down
+                //   Best is to regularly check whether we are nearing end of allowedTime,
+                //   in which case we close resources before timing out.
+                //   Frontal functions might have the same issue also.
+                new Thread(() -> onHandled(applicationContext)));
+        var eventConsumer = applicationContext.getBean(EventConsumer.class);
+        var messageConverter = applicationContext.getBean(ConsumableEventTyper.class);
+        eventConsumer.accept(messageConverter.apply(messages));
+      }
+      return "ok";
+    } catch (Exception e) {
+      log.error("Error while processing SQS event", e);
+      Sentry.captureException(e);
+      throw e;
+    } finally {
+      Sentry.flush(Duration.ofSeconds(5).toMillis());
+    }
   }
 
   private void onHandled(ConfigurableApplicationContext applicationContext) {
@@ -72,7 +78,7 @@ public class MailboxEventHandler implements RequestHandler<SQSEvent, String> {
   }
 
   private ConfigurableApplicationContext applicationContext(String... args) {
-    SpringApplication application = new SpringApplication(PojaApplication.class);
+    SpringApplication application = new SpringApplication(app.bpartners.api.PojaApplication.class);
     application.setDefaultProperties(
         Map.of(
             "spring.flyway.enabled", "false", "server.port", SPRING_SERVER_PORT_FOR_RANDOM_VALUE));
