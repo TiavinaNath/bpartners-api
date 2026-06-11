@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @PojaGenerated
-@SuppressWarnings("all")
 @AllArgsConstructor
 public class ConsumableEvent {
   @Getter private final TypedEvent event;

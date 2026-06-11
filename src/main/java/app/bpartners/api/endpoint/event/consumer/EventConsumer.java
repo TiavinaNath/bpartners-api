@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @PojaGenerated
-@SuppressWarnings("all")
 @Component
 @Slf4j
 public class EventConsumer implements Consumer<List<ConsumableEvent>> {
