@@ -17,7 +17,7 @@ import software.amazon.awssdk.transfer.s3.S3TransferManager;
 
 @PojaGenerated
 @Configuration
-public class BucketConf implements BucketAccess {
+public class BucketConf2 implements BucketAccess {
 
   @Getter private final String bucketName;
   private final S3TransferManager s3TransferManager;
@@ -26,7 +26,7 @@ public class BucketConf implements BucketAccess {
   private final AWSProviderConf awsProviderConf;
 
   @SneakyThrows
-  public BucketConf(
+  public BucketConf2(
       @Value("${aws.region}") String regionString,
       @Value("${aws.s3.bucket}") String bucketName,
       @Value("${aws.endpoint.override}") String endpointOverride,

@@ -24,9 +24,9 @@ import software.amazon.awssdk.transfer.s3.progress.LoggingTransferListener;
 @SuppressWarnings("all")
 @Component
 @AllArgsConstructor
-public class BucketComponent {
+public class BucketComponent2 {
 
-  private final BucketConf bucketConf;
+  private final BucketConf2 bucketConf2;
   private final BucketLandingConf bucketLandingConf;
 
   public FileHash upload(File file, String bucketKey, boolean isPrincipalBucket) {
@@ -36,7 +36,7 @@ public class BucketComponent {
   }
 
   private FileHash uploadDirectory(File file, String bucketKey, boolean isBucketPrincipal) {
-    var conf = getBucketConf(isBucketPrincipal);
+    var conf = getBucketConf2(isBucketPrincipal);
     var request =
         UploadDirectoryRequest.builder()
             .source(file.toPath())
@@ -51,12 +51,12 @@ public class BucketComponent {
     return new FileHash(FileHashAlgorithm.NONE, null);
   }
 
-  private BucketAccess getBucketConf(boolean isBucketPrincipal) {
-    return isBucketPrincipal ? bucketConf : bucketLandingConf;
+  private BucketAccess getBucketConf2(boolean isBucketPrincipal) {
+    return isBucketPrincipal ? bucketConf2 : bucketLandingConf;
   }
 
   private FileHash uploadFile(File file, String bucketKey, boolean isBucketPrincipal) {
-    var conf = getBucketConf(isBucketPrincipal);
+    var conf = getBucketConf2(isBucketPrincipal);
     var request =
         UploadFileRequest.builder()
             .source(file)
@@ -72,7 +72,7 @@ public class BucketComponent {
   public File download(String bucketKey, boolean isPrincipalBucket) {
     var destination =
         createTempFile(prefixFromBucketKey(bucketKey), suffixFromBucketKey(bucketKey));
-    var conf = getBucketConf(isPrincipalBucket);
+    var conf = getBucketConf2(isPrincipalBucket);
     FileDownload download =
         conf.getS3TransferManager()
             .downloadFile(
@@ -105,9 +105,9 @@ public class BucketComponent {
 
   public URL presign(String bucketKey, Duration expiration) {
     GetObjectRequest getObjectRequest =
-        GetObjectRequest.builder().bucket(bucketConf.getBucketName()).key(bucketKey).build();
+        GetObjectRequest.builder().bucket(bucketConf2.getBucketName()).key(bucketKey).build();
     PresignedGetObjectRequest presignedRequest =
-        bucketConf
+        bucketConf2
             .getS3Presigner()
             .presignGetObject(
                 GetObjectPresignRequest.builder()
@@ -118,7 +118,7 @@ public class BucketComponent {
   }
 
   public URL presignLanding(String bucketKey, Duration expiration, boolean isBucketPrincipal) {
-    var conf = getBucketConf(isBucketPrincipal);
+    var conf = getBucketConf2(isBucketPrincipal);
     GetObjectRequest getObjectRequest =
         GetObjectRequest.builder().bucket(conf.getBucketName()).key(bucketKey).build();
     PresignedGetObjectRequest presignedRequest =

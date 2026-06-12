@@ -27,7 +27,7 @@ import app.bpartners.api.endpoint.rest.model.ProspectEvaluationJobStatus;
 import app.bpartners.api.endpoint.rest.model.ProspectEvaluationJobType;
 import app.bpartners.api.endpoint.rest.model.ProspectStatus;
 import app.bpartners.api.file.FileWriter;
-import app.bpartners.api.file.bucket.BucketComponent;
+import app.bpartners.api.file.bucket.BucketComponent2;
 import app.bpartners.api.model.*;
 import app.bpartners.api.model.exception.ApiException;
 import app.bpartners.api.model.exception.BadRequestException;
@@ -102,7 +102,7 @@ public class ProspectService {
   private final CustomDateFormatter customDateFormatter;
   private final ProspectJpaRepository prospectJpaRepository;
   private final UserWhiteListedJpaRepository userWhiteListedJpaRepository;
-  private final BucketComponent bucketComponent;
+  private final BucketComponent2 bucketComponent2;
   private final FileWriter fileWriter;
 
   private static List<ProspectResult> ratedCustomers(
@@ -303,7 +303,7 @@ public class ProspectService {
               "prospects/%s/notifications/attachments/%s",
               prospect.getId(), prospectAttachmentFileKey);
 
-      bucketComponent.upload(fileAttachment, bucketKey, true);
+      bucketComponent2.upload(fileAttachment, bucketKey, true);
 
       prospectCreatedBuilder.attachmentFileKey(prospectAttachmentFileKey);
     }
