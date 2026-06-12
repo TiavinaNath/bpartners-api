@@ -9,7 +9,6 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ses.SesClient;
 
 @PojaGenerated
-@SuppressWarnings("all")
 @Configuration
 public class EmailConf {
 
@@ -17,7 +16,7 @@ public class EmailConf {
   private final Region region;
 
   public EmailConf(
-      @Value("${aws.ses.source}") String sesSource, @Value("eu-west-3") Region region) {
+      @Value("noreply@preprod.poja.io") String sesSource, @Value("eu-west-3") Region region) {
     this.sesSource = sesSource;
     this.region = region;
   }
