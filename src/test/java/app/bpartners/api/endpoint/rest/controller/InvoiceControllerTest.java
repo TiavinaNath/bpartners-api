@@ -18,7 +18,7 @@ import app.bpartners.api.endpoint.rest.model.InvoiceExportRequest;
 import app.bpartners.api.endpoint.rest.security.AuthProvider;
 import app.bpartners.api.endpoint.rest.validator.InvoiceReferenceValidator;
 import app.bpartners.api.endpoint.rest.validator.UpdatePaymentRegValidator;
-import app.bpartners.api.file.bucket.BucketComponent;
+import app.bpartners.api.file.bucket.BucketComponent2;
 import app.bpartners.api.model.User;
 import app.bpartners.api.model.exception.ForbiddenException;
 import app.bpartners.api.service.invoice.InvoiceExportRequestService;
@@ -37,9 +37,9 @@ class InvoiceControllerTest {
   InvoicesSummaryRestMapper invoicesSummaryRestMapperMock = mock();
   InvoiceSummaryService invoiceSummaryServiceMock = mock();
   InvoiceExportRequestService invoiceExportRequestServiceMock = mock();
-  BucketComponent bucketComponentMock = mock();
+  BucketComponent2 bucketComponent2Mock = mock();
   InvoiceExportRequestRestMapper invoiceExportRequestRestMapper =
-      new InvoiceExportRequestRestMapper(bucketComponentMock);
+      new InvoiceExportRequestRestMapper(bucketComponent2Mock);
 
   InvoiceController subject =
       new InvoiceController(
@@ -76,7 +76,7 @@ class InvoiceControllerTest {
                 .outputFormat(ZIP)
                 .creationDatetime(now())
                 .build());
-    when(bucketComponentMock.presign(any(), any())).thenReturn(null);
+    when(bucketComponent2Mock.presign(any(), any())).thenReturn(null);
 
     var actual = subject.retrieveInvoiceExportRequestById(userIdentifier, requestId);
 
@@ -119,7 +119,7 @@ class InvoiceControllerTest {
                 .outputFormat(ZIP)
                 .creationDatetime(now())
                 .build());
-    when(bucketComponentMock.presign(any(), any())).thenReturn(null);
+    when(bucketComponent2Mock.presign(any(), any())).thenReturn(null);
 
     var actual = subject.retrieveInvoiceExportRequestById(userIdentifier, requestId);
 

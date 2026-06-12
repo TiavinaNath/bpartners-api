@@ -9,7 +9,7 @@ import static org.mockito.Mockito.*;
 
 import app.bpartners.api.endpoint.event.model.ProspectCreated;
 import app.bpartners.api.file.FileWriter;
-import app.bpartners.api.file.bucket.BucketComponent;
+import app.bpartners.api.file.bucket.BucketComponent2;
 import app.bpartners.api.model.AccountHolder;
 import app.bpartners.api.model.Attachment;
 import app.bpartners.api.model.prospect.Prospect;
@@ -29,7 +29,7 @@ class ProspectCreatedServiceTest {
   AccountHolderRepository accountHolderRepositoryMock = mock();
   SesService sesServiceMock = mock();
   TemplateResolverEngine templateResolverEngineMock = mock();
-  BucketComponent bucketComponentMock = mock();
+  BucketComponent2 bucketComponent2Mock = mock();
   FileWriter fileWriterMock = mock();
 
   ProspectCreatedService subject =
@@ -37,7 +37,7 @@ class ProspectCreatedServiceTest {
           accountHolderRepositoryMock,
           sesServiceMock,
           templateResolverEngineMock,
-          bucketComponentMock,
+          bucketComponent2Mock,
           fileWriterMock);
 
   @SneakyThrows
@@ -61,7 +61,7 @@ class ProspectCreatedServiceTest {
     when(accountHolderRepositoryMock.findById(prospectMock.getIdHolderOwner()))
         .thenReturn(accountHolderMock);
     when(accountHolderMock.getEmail()).thenReturn(accountHolderEmail);
-    when(bucketComponentMock.download(
+    when(bucketComponent2Mock.download(
             String.format(
                 "prospects/%s/notifications/attachments/%s", prospectId, attachmentFileKey),
             true))
