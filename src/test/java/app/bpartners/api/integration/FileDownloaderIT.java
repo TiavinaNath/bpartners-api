@@ -11,11 +11,11 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Disabled
+// temporary disabled, 502 bad gateway
 public class FileDownloaderIT extends MockedThirdParties {
   @Autowired FileDownloader fileDownloader;
 
-  @Disabled
-  // open street map temporary down, 502 bad gateway
   @Test
   void file_downloader_get_ok() {
     var downloaded =
