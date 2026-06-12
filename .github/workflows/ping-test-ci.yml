@@ -1,0 +1,108 @@
+name: POJA Ping Test
+
+on:
+  push:
+    branches:
+      - import-df6086cf-e7e6-4351-a09d-bc3bc866f379-ping-test
+
+env:
+  ORG_ID: d3aa5c20-aba0-4f7f-89f8-320c156a75d0
+  IMPORT_ID: df6086cf-e7e6-4351-a09d-bc3bc866f379
+
+jobs:
+  ping-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      BRIDGE_BASE_URL: ${{ secrets.TEST_BRIDGE_BASE_URL }}
+      GOOGLE_CAPTCHA_SECRET: ${{ secrets.TEST_GOOGLE_CAPTCHA_SECRET }}
+      SUBSCRIPTION_USER_CREDIT_ID: ${{ secrets.TEST_SUBSCRIPTION_USER_CREDIT_ID }}
+      XYZ_TO_BBOX_CONVERTER_URL: ${{ secrets.TEST_XYZ_TO_BBOX_CONVERTER_URL }}
+      BRIDGE_CLIENT_ID: ${{ secrets.TEST_BRIDGE_CLIENT_ID }}
+      STRIPE_SUBSCRIPTION_PRODUCT_ESSENTIAL_ID: ${{ secrets.TEST_STRIPE_SUBSCRIPTION_PRODUCT_ESSENTIAL_ID }}
+      FEATURE_DETECTOR_API_KEY: ${{ secrets.TEST_FEATURE_DETECTOR_API_KEY }}
+      SPRING_DATASOURCE_URL: ${{ secrets.TEST_SPRING_DATASOURCE_URL }}
+      EXPRESSIF_PROJECT_TOKEN: ${{ secrets.TEST_EXPRESSIF_PROJECT_TOKEN }}
+      AWS_COGNITO_USERPOOL_DOMAIN: ${{ secrets.TEST_AWS_COGNITO_USERPOOL_DOMAIN }}
+      AWS_S3_LANDING_BUCKET: ${{ secrets.TEST_AWS_S3_LANDING_BUCKET }}
+      GOOGLE_CALENDAR_CLIENT_ID: ${{ secrets.TEST_GOOGLE_CALENDAR_CLIENT_ID }}
+      STRIPE_SUBSCRIPTION_PRODUCT_BASIC_ID: ${{ secrets.TEST_STRIPE_SUBSCRIPTION_PRODUCT_BASIC_ID }}
+      ADS_DENOM_CHAR: ${{ secrets.TEST_ADS_DENOM_CHAR }}
+      TILE_EXTENDER_BASEURL: ${{ secrets.TEST_TILE_EXTENDER_BASEURL }}
+      AWS_SES_SOURCE: ${{ secrets.TEST_AWS_SES_SOURCE }}
+      GOOGLE_SHEET_REDIRECT_URIS: ${{ secrets.TEST_GOOGLE_SHEET_REDIRECT_URIS }}
+      GOOGLE_SHEET_CLIENT_SECRET: ${{ secrets.TEST_GOOGLE_SHEET_CLIENT_SECRET }}
+      GOOGLE_SHEET_APPS_NAME: ${{ secrets.TEST_GOOGLE_SHEET_APPS_NAME }}
+      GEOSERVER_BASEURL: ${{ secrets.TEST_GEOSERVER_BASEURL }}
+      GOOGLE_SHEET_CLIENT_ID: ${{ secrets.TEST_GOOGLE_SHEET_CLIENT_ID }}
+      SPRING_DATASOURCE_USERNAME: ${{ secrets.TEST_SPRING_DATASOURCE_USERNAME }}
+      SENDINBLUE_CONTACTLIST_ID: ${{ secrets.TEST_SENDINBLUE_CONTACTLIST_ID }}
+      AWS_COGNITO_USERPOOL_CLIENTID: ${{ secrets.TEST_AWS_COGNITO_USERPOOL_CLIENTID }}
+      DASHBOARD_URL: ${{ secrets.TEST_DASHBOARD_URL }}
+      ENV: ${{ secrets.TEST_ENV }}
+      BRIDGE_VERSION: ${{ secrets.TEST_BRIDGE_VERSION }}
+      AWS_COGNITO_USERPOOL_ID: ${{ secrets.TEST_AWS_COGNITO_USERPOOL_ID }}
+      GOOGLE_CALENDAR_CLIENT_SECRET: ${{ secrets.TEST_GOOGLE_CALENDAR_CLIENT_SECRET }}
+      ADMIN_EMAIL: ${{ secrets.TEST_ADMIN_EMAIL }}
+      SNS_PLATFORM_ARN: ${{ secrets.TEST_SNS_PLATFORM_ARN }}
+      GOOGLE_CALENDAR_REDIRECT_URIS: ${{ secrets.TEST_GOOGLE_CALENDAR_REDIRECT_URIS }}
+      SENDINBLUE_API_KEY: ${{ secrets.TEST_SENDINBLUE_API_KEY }}
+      SENTRY_ENVIRONMENT: ${{ secrets.TEST_SENTRY_ENVIRONMENT }}
+      BRIDGE_CLIENT_SECRET: ${{ secrets.TEST_BRIDGE_CLIENT_SECRET }}
+      BAN_BASE_URL: ${{ secrets.TEST_BAN_BASE_URL }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.TEST_SPRING_DATASOURCE_PASSWORD }}
+      IGN_GEOSERVER_BASEURL: ${{ secrets.TEST_IGN_GEOSERVER_BASEURL }}
+      GEO_JOBS_BASE_URL: ${{ secrets.TEST_GEO_JOBS_BASE_URL }}
+      ADS_BASEURL: ${{ secrets.TEST_ADS_BASEURL }}
+      STRIPE_PRIVATE_API_KEY: ${{ secrets.TEST_STRIPE_PRIVATE_API_KEY }}
+      AWS_COGNITO_USERPOOL_CLIENTSECRET: ${{ secrets.TEST_AWS_COGNITO_USERPOOL_CLIENTSECRET }}
+      ADS_BEARER: ${{ secrets.TEST_ADS_BEARER }}
+      GOOGLE_GEOCODE_API_KEY: ${{ secrets.TEST_GOOGLE_GEOCODE_API_KEY }}
+      GEO_JOBS_ADMIN_API_KEY: ${{ secrets.TEST_GEO_JOBS_ADMIN_API_KEY }}
+      GOOGLE_CAPTCHA_URL: ${{ secrets.TEST_GOOGLE_CAPTCHA_URL }}
+      SENTRY_DSN: ${{ secrets.TEST_SENTRY_DSN }}
+      GOOGLE_CALENDAR_APPS_NAME: ${{ secrets.TEST_GOOGLE_CALENDAR_APPS_NAME }}
+      FEATURE_DETECTOR_APPLICATION_NAME: ${{ secrets.TEST_FEATURE_DETECTOR_APPLICATION_NAME }}
+
+    steps:
+      - uses: actions/checkout@v4.1.6
+
+      - uses: actions/setup-java@v4.2.1
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+
+      - name: Run ping test
+        id: test
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          set +e
+
+          chmod +x gradlew
+          ./gradlew test --tests PingIT
+
+          EXIT_CODE=$?
+          set -e
+
+          if [ $EXIT_CODE -eq 0 ]; then
+            echo "outcome=SUCCESS" >> $GITHUB_OUTPUT
+          else
+            echo "outcome=FAILURE" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update import state
+        run: |
+          REPO_NAME=$(basename "${GITHUB_REPOSITORY}")
+
+          curl --fail -X POST "https://api.preprod.poja.io/orgs/${{ env.ORG_ID }}/imports/${{ env.IMPORT_ID }}/states" \
+            -H "Authorization: AppImportBearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n \
+                  --arg job_name "POST_TRANSFORMATION_PING_TEST" \
+                  --arg job_status "${{ steps.test.outputs.outcome }}" \
+                  --arg run_id "${{ github.run_id }}" \
+                  --arg attempt_nb "${{ github.run_attempt }}" \
+                  --arg repo_owner "${{ github.repository_owner }}" \
+                  --arg repo_name "$REPO_NAME" \
+                  '{ job_name: $job_name, job_status: $job_status, run_id: $run_id, attempt_nb: $attempt_nb, repo_owner: $repo_owner, repo_name: $repo_name }')"
