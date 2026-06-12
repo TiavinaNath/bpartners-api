@@ -90,6 +90,22 @@ jobs:
           else
             echo "outcome=FAILURE" >> $GITHUB_OUTPUT
           fi
+          
+      - name: Print test failures
+        if: always()
+        run: |
+          find build/test-results -name "*.xml" | xargs grep -l "<failure\|<error" 2>/dev/null | \
+          while read f; do
+            echo "=== $f ==="
+            grep -A 20 "<failure\|<error" "$f"
+          done
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ping-test-report
+          path: build/reports/tests/test/
 
       - name: Update import state
         run: |
