@@ -12,7 +12,7 @@ import static org.mockito.Mockito.*;
 import app.bpartners.api.endpoint.event.EventProducer;
 import app.bpartners.api.endpoint.event.model.CustomerExportHistorySaved;
 import app.bpartners.api.endpoint.event.model.UpcomingDebitedCustomerExportRequested;
-import app.bpartners.api.file.bucket.BucketComponent2;
+import app.bpartners.api.file.bucket.ExtendedBucketComponent;
 import app.bpartners.api.model.*;
 import app.bpartners.api.payment.UserSubscriptionConf;
 import app.bpartners.api.repository.jpa.CustomerExportHistoryJpaRepository;
@@ -39,7 +39,7 @@ class UpcomingDebitedCustomerExportRequestedServiceTest {
       mock(UnknownStripeCustomerJpaRepository.class);
   UserSubscriptionConf userSubscriptionConfMock = mock(UserSubscriptionConf.class);
   CustomerExportFunction customerExportFunctionMock = mock(CustomerExportFunction.class);
-  BucketComponent2 bucketComponent2Mock = mock(BucketComponent2.class);
+  ExtendedBucketComponent extendedBucketComponentMock = mock(ExtendedBucketComponent.class);
   CustomerExportHistoryJpaRepository customerExportHistoryJpaRepositoryMock =
       mock(CustomerExportHistoryJpaRepository.class);
   EventProducer eventProducerMock = mock(EventProducer.class);
@@ -53,7 +53,7 @@ class UpcomingDebitedCustomerExportRequestedServiceTest {
           unknownStripeCustomerJpaRepositoryMock,
           userSubscriptionConfMock,
           customerExportFunctionMock,
-          bucketComponent2Mock,
+          extendedBucketComponentMock,
           customerExportHistoryJpaRepositoryMock,
           eventProducerMock,
           stripeCustomerServiceMock);
@@ -104,7 +104,7 @@ class UpcomingDebitedCustomerExportRequestedServiceTest {
     when(unknownStripeCustomerJpaRepositoryMock.findAllByCreationDatetimeBetween(any(), any()))
         .thenReturn(List.of(unknownStripeCustomerMock));
     when(customerExportFunctionMock.apply(any())).thenReturn(exportedExcelFileMock);
-    when(bucketComponent2Mock.upload(eq(exportedExcelFileMock), anyString(), eq(true)))
+    when(extendedBucketComponentMock.upload(eq(exportedExcelFileMock), anyString(), eq(true)))
         .thenReturn(mock());
     when(customerExportHistoryJpaRepositoryMock.save(any()))
         .thenAnswer(invocation -> invocation.getArgument(0));

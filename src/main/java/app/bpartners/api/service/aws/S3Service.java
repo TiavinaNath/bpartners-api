@@ -2,7 +2,7 @@ package app.bpartners.api.service.aws;
 
 import app.bpartners.api.endpoint.rest.model.FileType;
 import app.bpartners.api.file.BucketKeyRetriever;
-import app.bpartners.api.file.bucket.BucketComponent2;
+import app.bpartners.api.file.bucket.ExtendedBucketComponent;
 import app.bpartners.api.file.hash.FileHash;
 import java.io.File;
 import java.time.Duration;
@@ -15,32 +15,32 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class S3Service {
-  private final BucketComponent2 bucketComponent2;
+  private final ExtendedBucketComponent extendedBucketComponent;
   private final BucketKeyRetriever bucketKeyRetriever;
 
   public String presignURL(
       FileType fileType, String fileId, String idUser, Long expirationInSeconds) {
     String key = bucketKeyRetriever.apply(fileType, fileId, idUser);
-    return bucketComponent2.presign(key, Duration.ofSeconds(expirationInSeconds)).toString();
+    return extendedBucketComponent.presign(key, Duration.ofSeconds(expirationInSeconds)).toString();
   }
 
   @SneakyThrows
   public FileHash uploadFile(FileType fileType, String fileId, String idUser, File fileToUpload) {
     String key = bucketKeyRetriever.apply(fileType, fileId, idUser);
-    return bucketComponent2.upload(fileToUpload, key, true);
+    return extendedBucketComponent.upload(fileToUpload, key, true);
   }
 
   public File downloadFile(FileType fileType, String fileId, String idUser) {
     String key = bucketKeyRetriever.apply(fileType, fileId, idUser);
-    return bucketComponent2.download(key, true);
+    return extendedBucketComponent.download(key, true);
   }
 
   public File downloadLandingFile(String key) {
-    return bucketComponent2.download(key, false);
+    return extendedBucketComponent.download(key, false);
   }
 
   public String uploadLandingFile(File file, String key) {
-    bucketComponent2.upload(file, key, false);
-    return bucketComponent2.presignLanding(key, Duration.ofSeconds(60), false).toString();
+    extendedBucketComponent.upload(file, key, false);
+    return extendedBucketComponent.presignLanding(key, Duration.ofSeconds(60), false).toString();
   }
 }

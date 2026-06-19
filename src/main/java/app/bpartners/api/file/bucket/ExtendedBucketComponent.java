@@ -2,7 +2,6 @@ package app.bpartners.api.file.bucket;
 
 import static java.io.File.createTempFile;
 
-import app.bpartners.api.PojaGenerated;
 import app.bpartners.api.file.hash.FileHash;
 import app.bpartners.api.file.hash.FileHashAlgorithm;
 import java.io.File;
@@ -20,11 +19,9 @@ import software.amazon.awssdk.transfer.s3.model.UploadDirectoryRequest;
 import software.amazon.awssdk.transfer.s3.model.UploadFileRequest;
 import software.amazon.awssdk.transfer.s3.progress.LoggingTransferListener;
 
-@PojaGenerated
-@SuppressWarnings("all")
 @Component
 @AllArgsConstructor
-public class BucketComponent2 {
+public class ExtendedBucketComponent {
 
   private final BucketConf2 bucketConf2;
   private final BucketLandingConf bucketLandingConf;

@@ -4,7 +4,7 @@ import static java.time.Instant.now;
 
 import app.bpartners.api.endpoint.rest.model.InvoiceExportBatch;
 import app.bpartners.api.endpoint.rest.model.InvoiceExportRequest;
-import app.bpartners.api.file.bucket.BucketComponent2;
+import app.bpartners.api.file.bucket.ExtendedBucketComponent;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class InvoiceExportRequestRestMapper {
-  private final BucketComponent2 bucketComponent2;
+  private final ExtendedBucketComponent extendedBucketComponent;
 
   public InvoiceExportRequest toRest(
       app.bpartners.api.model.InvoiceExportRequest invoiceExportRequest) {
@@ -34,7 +34,10 @@ public class InvoiceExportRequestRestMapper {
   public InvoiceExportBatch toRest(app.bpartners.api.model.InvoiceExportBatch invoiceExportBatch) {
     var urlExpiration = Duration.ofHours(1L);
     return new InvoiceExportBatch()
-        .url(bucketComponent2.presign(invoiceExportBatch.getFileKey(), urlExpiration).toString())
+        .url(
+            extendedBucketComponent
+                .presign(invoiceExportBatch.getFileKey(), urlExpiration)
+                .toString())
         .contentSize(invoiceExportBatch.getContentSize())
         .creationDatetime(invoiceExportBatch.getCreationDatetime())
         .properties(invoiceExportBatch.getProperties())
